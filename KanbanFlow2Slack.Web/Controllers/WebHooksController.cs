@@ -1,6 +1,9 @@
 using KanbanFlow2Slack.Web.ApiClients;
+using KanbanFlow2Slack.Web.Constants;
+using KanbanFlow2Slack.Web.Models;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Web;
 using System.Web.Http;
@@ -27,8 +30,10 @@ namespace KanbanFlow2Slack.Web.Controllers
                 // convert the webhook data into json
                 var data = ExtractWebhookData();
 
+                Trace.TraceInformation(data);
+
                 // extract the task meta-data
-                var task = ExtractTask(data);
+                var task = new Task(data);
 
                 // generate the message to send to slack
                 var message = GenerateMessage(task);
@@ -41,96 +46,9 @@ namespace KanbanFlow2Slack.Web.Controllers
             }
             catch (Exception ex)
             {
+                Trace.TraceError(ex.ToString());
                 return ex.Message;
             }
-        }
-
-        private string DetermineAction(dynamic data)
-        {
-            var eventType = (string)data.eventType.Value;
-            string action;
-
-            switch (eventType)
-            {
-                case "taskCreated":
-                    {
-                        action = "created";
-                        break;
-                    }
-                case "taskChanged":
-                    {
-                        action = "updated";
-                        break;
-                    }
-                case "taskDeleted":
-                    {
-                        action = "deleted";
-                        break;
-                    }
-                default:
-                    {
-                        action = "unknown";
-                        break;
-                    }
-            }
-
-            return action;
-        }
-
-        private string DetermineUser(dynamic data)
-        {
-            var userId = data.userId.Value;
-            var user = string.Empty;
-            Globals.Users.TryGetValue(userId, out user);
-
-            // if the user was not found, it might be because the user was added to kanbanflow
-            // *after* our application startup where we cache the users. Let's reload the user cache
-            // and re-check
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                Globals.Users = new KanbanFlowClient().FetchUsers();
-                Globals.Users.TryGetValue(userId, out user);
-            }
-
-            // if we are only using first names then ignore anything after the first space character
-            if (Globals.ReportFirstNameOnly)
-            {
-                user = user?.Substring(0, user.IndexOf(" ", StringComparison.Ordinal));
-            }
-
-            return string.IsNullOrWhiteSpace(user) ? "unknown" : user;
-        }
-
-        private Task ExtractTask(dynamic data)
-        {
-            // determine what action was taken on the kanbanflow task
-            var action = DetermineAction(data);
-
-            // determine which user took the action
-            var user = DetermineUser(data);
-
-            string id;
-            string name;
-
-            // the task id and task name are in different places depending on the action :(
-            if (action.Equals("created") || action.Equals("updated"))
-            {
-                id = data.task._id;
-                name = data.task.name;
-            }
-            else
-            {
-                id = data.taskId;
-                name = data.taskName;
-            }
-
-            return new Task
-            {
-                Id = id,
-                Name = name,
-                User = user,
-                Action = action
-            };
         }
 
         private dynamic ExtractWebhookData()
@@ -143,15 +61,8 @@ namespace KanbanFlow2Slack.Web.Controllers
 
         private string GenerateMessage(Task task)
         {
-            return $"{task.User} just {task.Action} <{string.Format(Globals.KanbanFlowUrlTemplate, task.Id)} | {task.Name}>";
-        }
-
-        private class Task
-        {
-            internal string Action { get; set; }
-            internal string Id { get; set; }
-            internal string Name { get; set; }
-            internal string User { get; set; }
+            // if the task was deleted then we don't want to generate a link to it
+            return task.Action.Equals(TaskActions.Deleted) ? $"{task.User} just deleted {task.Name}" : $"{task.User} just {task.Action} <{string.Format(Globals.KanbanFlowUrlTemplate, task.Id)} | {task.Name}>";
         }
     }
 }

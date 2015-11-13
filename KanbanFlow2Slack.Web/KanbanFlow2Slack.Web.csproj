@@ -85,11 +85,13 @@
     <Compile Include="ApiClients\KanbanFlowClient.cs" />
     <Compile Include="ApiClients\SlackClient.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Constants\TaskActions.cs" />
     <Compile Include="Controllers\WebHooksController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Globals.cs" />
+    <Compile Include="Models\Task.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
