@@ -28,9 +28,10 @@ namespace KanbanFlow2Slack.Web.Controllers
             try
             {
                 // convert the webhook data into json
-                var data = ExtractWebhookData();
+                string rawPayload;
+                var data = ExtractWebhookData(out rawPayload);
 
-                Trace.TraceInformation(data);
+                Trace.TraceInformation(rawPayload);
 
                 // extract the task meta-data
                 var task = new Task(data);
@@ -51,10 +52,11 @@ namespace KanbanFlow2Slack.Web.Controllers
             }
         }
 
-        private dynamic ExtractWebhookData()
+        private dynamic ExtractWebhookData(out string rawPayload)
         {
             var sr = new StreamReader(HttpContext.Current.Request.InputStream);
             var payload = sr.ReadToEnd();
+            rawPayload = payload;
 
             return JsonConvert.DeserializeObject(payload);
         }
