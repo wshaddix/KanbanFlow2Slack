@@ -57,7 +57,7 @@ namespace KanbanFlow2Slack.Web.Controllers
                         action = "created";
                         break;
                     }
-                case "taskUpdated":
+                case "taskChanged":
                     {
                         action = "updated";
                         break;
@@ -95,7 +95,7 @@ namespace KanbanFlow2Slack.Web.Controllers
             // if we are only using first names then ignore anything after the first space character
             if (Globals.ReportFirstNameOnly)
             {
-                user = user?.Substring(0, user.IndexOf(" ", StringComparison.Ordinal) + 1);
+                user = user?.Substring(0, user.IndexOf(" ", StringComparison.Ordinal));
             }
 
             return string.IsNullOrWhiteSpace(user) ? "unknown" : user;

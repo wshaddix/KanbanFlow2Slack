@@ -109,9 +109,6 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="appSecrets.config" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Properties\PublishProfiles\kanbanflow2slack - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\kanbanflow2slack - Web Deploy.pubxml" />
   </ItemGroup>
