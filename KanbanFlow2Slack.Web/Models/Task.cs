@@ -52,7 +52,7 @@ namespace KanbanFlow2Slack.Web.Models
             string name;
 
             // the task id and task name are in different places depending on the action :(
-            if (Action.Equals(TaskActions.Created) || Action.Equals(TaskActions.Deleted))
+            if (Action.Equals(TaskActions.Created) || Action.Equals(TaskActions.Updated))
             {
                 id = data.task._id;
                 name = data.task.name;
