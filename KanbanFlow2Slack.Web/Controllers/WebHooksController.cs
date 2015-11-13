@@ -80,7 +80,7 @@ namespace KanbanFlow2Slack.Web.Controllers
         private string DetermineUser(dynamic data)
         {
             var userId = data.userId.Value;
-            string user;
+            var user = string.Empty;
             Globals.Users.TryGetValue(userId, out user);
 
             // if the user was not found, it might be because the user was added to kanbanflow
@@ -109,10 +109,25 @@ namespace KanbanFlow2Slack.Web.Controllers
             // determine which user took the action
             var user = DetermineUser(data);
 
+            string id;
+            string name;
+
+            // the task id and task name are in different places depending on the action :(
+            if (action.Equals("created") || action.Equals("updated"))
+            {
+                id = data.task._id;
+                name = data.task.name;
+            }
+            else
+            {
+                id = data.taskId;
+                name = data.taskName;
+            }
+
             return new Task
             {
-                Id = data.task._id,
-                Name = data.task.name,
+                Id = id,
+                Name = name,
                 User = user,
                 Action = action
             };
