@@ -1,2 +1,2 @@
 # KanbanFlow2Slack
-Integrates KanbanFlow with Slack
+Integrates KanbanFlow with Slack.
