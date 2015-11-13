@@ -1,18 +1,22 @@
-using Microsoft.AspNet.Mvc;
+using KanbanFlow2Slack.Web.ApiClients;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Web;
+using System.Web.Http;
+using System.Web.Http.Results;
 
-namespace kanbanflow_slack.Controllers
+namespace KanbanFlow2Slack.Web.Controllers
 {
     [Route("api/webhooks")]
-    public class WebHooksController : Controller
+    public class WebHooksController : ApiController
     {
         // HEAD: api/webhooks
         [HttpHead]
-        public void Head()
+        public OkResult Head()
         {
             // nothing to do, we just need to return a 200 status code
+            return Ok();
         }
 
         [HttpPost]
@@ -44,7 +48,7 @@ namespace kanbanflow_slack.Controllers
 
         private dynamic ExtractWebhookData()
         {
-            var sr = new StreamReader(HttpContext.Request.Body);
+            var sr = new StreamReader(HttpContext.Current.Request.InputStream);
             var payload = sr.ReadToEnd();
 
             return JsonConvert.DeserializeObject(payload);

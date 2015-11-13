@@ -2,7 +2,7 @@
 using System;
 using System.Net.Http;
 
-namespace kanbanflow_slack
+namespace KanbanFlow2Slack.Web.ApiClients
 {
     internal class SlackClient : HttpClient
     {
