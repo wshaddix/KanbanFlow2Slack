@@ -1,12 +1,12 @@
+using KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace KanbanFlow2Slack.Web.ApiClients
+namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow
 {
     internal class KanbanFlowClient : HttpClient
     {
@@ -21,23 +21,18 @@ namespace KanbanFlow2Slack.Web.ApiClients
             DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64);
         }
 
-        public static string ApiKey { get; set; }
+        internal static string ApiKey { get; set; }
 
-        internal Dictionary<string, string> FetchUsers()
+        internal Board FetchBoard()
         {
-            var userData = GetStringAsync("users").Result;
-            var users = JsonConvert.DeserializeObject<User[]>(userData);
-
-            return users.ToDictionary(user => user.Id, user => user.FullName);
+            var boardData = GetStringAsync("board").Result;
+            return JsonConvert.DeserializeObject<Board>(boardData);
         }
 
-        private class User
+        internal List<User> FetchUsers()
         {
-            [JsonProperty("fullName")]
-            internal string FullName { get; set; }
-
-            [JsonProperty("_id")]
-            internal string Id { get; set; }
+            var userData = GetStringAsync("users").Result;
+            return JsonConvert.DeserializeObject<List<User>>(userData);
         }
     }
 }

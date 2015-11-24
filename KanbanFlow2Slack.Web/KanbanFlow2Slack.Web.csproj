@@ -82,16 +82,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApiClients\KanbanFlowClient.cs" />
-    <Compile Include="ApiClients\SlackClient.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\Board.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\ChangedProperty.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\Column.cs" />
+    <Compile Include="ApiClients\KanbanFlow\KanbanFlowClient.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\Date.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\Label.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\SubTask.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\SwimLane.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\Task.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\User.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\WebhookEvent.cs" />
+    <Compile Include="ApiClients\Slack\SlackClient.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Constants\TaskActions.cs" />
+    <Compile Include="ApiClients\KanbanFlow\Types\EventTypes.cs" />
     <Compile Include="Controllers\WebHooksController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Globals.cs" />
-    <Compile Include="Models\Task.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +115,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Constants\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

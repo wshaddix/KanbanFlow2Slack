@@ -1,13 +1,11 @@
-using KanbanFlow2Slack.Web.ApiClients;
-using KanbanFlow2Slack.Web.Constants;
-using KanbanFlow2Slack.Web.Models;
-using Newtonsoft.Json;
+using KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types;
+using KanbanFlow2Slack.Web.ApiClients.Slack;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.Results;
 
 namespace KanbanFlow2Slack.Web.Controllers
 {
@@ -16,55 +14,137 @@ namespace KanbanFlow2Slack.Web.Controllers
     {
         // HEAD: api/webhooks
         [HttpHead]
-        public OkResult Head()
+        public IHttpActionResult Head()
         {
+            Trace.TraceInformation($"Head() called from {HttpContext.Current.Request.UserHostAddress}");
+
             // nothing to do, we just need to return a 200 status code
             return Ok();
         }
 
         [HttpPost]
-        public string Post()
+        public IHttpActionResult Post()
         {
+            Trace.TraceInformation($"Post() called from {HttpContext.Current.Request.UserHostAddress}");
+
             try
             {
-                // convert the webhook data into json
-                string rawPayload;
-                var data = ExtractWebhookData(out rawPayload);
+                // extract the json data from the HTTP POST request
+                var json = ExtractJsonFromPost();
 
-                Trace.TraceInformation(rawPayload);
+                Trace.TraceInformation(json);
 
-                // extract the task meta-data
-                var task = new Task(data);
+                // create a new webhook event from the json
+                var webhookEvent = new WebhookEvent(json);
 
                 // generate the message to send to slack
-                var message = GenerateMessage(task);
+                var message = GenerateMessage(webhookEvent);
 
                 // send the message to slack
                 var slackClient = new SlackClient();
                 slackClient.SendMessage(message);
 
-                return "success";
+                return Ok();
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
-                return ex.Message;
+                return InternalServerError(ex);
             }
         }
 
-        private dynamic ExtractWebhookData(out string rawPayload)
+        private string ExtractJsonFromPost()
         {
             var sr = new StreamReader(HttpContext.Current.Request.InputStream);
-            var payload = sr.ReadToEnd();
-            rawPayload = payload;
-
-            return JsonConvert.DeserializeObject(payload);
+            return sr.ReadToEnd();
         }
 
-        private string GenerateMessage(Task task)
+        private string GenerateMessage(WebhookEvent webhookEvent)
         {
-            // if the task was deleted then we don't want to generate a link to it
-            return task.Action.Equals(TaskActions.Deleted) ? $"{task.User} just deleted {task.Name}" : $"{task.User} just {task.Action} <{string.Format(Globals.KanbanFlowUrlTemplate, task.Id)} | {task.Name}>";
+            // the messaging varies based on the tasks action
+            string message;
+
+            switch (webhookEvent.EventType)
+            {
+                case EventTypes.Created:
+                    message = GenerateTaskCreatedMessage(webhookEvent);
+                    break;
+
+                case EventTypes.Changed:
+                    message = GenerateTaskUpdatedMessage(webhookEvent);
+                    break;
+
+                case EventTypes.Deleted:
+                    message = GenerateTaskDeletedMessage(webhookEvent);
+                    break;
+
+                default:
+                    message = "We have no idea what just happened!";
+                    break;
+            }
+
+            return message;
+        }
+
+        private string GenerateTaskCreatedMessage(WebhookEvent webhookEvent)
+        {
+            // figure out which name to use
+            var userName = GetUsername(webhookEvent);
+
+            // generate the task link
+            var taskLink = GetTaskLink(webhookEvent);
+
+            // we want to generate a url link in slack back to the kanbanflow task so the slack user
+            // can click the link and view the details
+            return $"{userName} just created {taskLink}";
+        }
+
+        private string GenerateTaskDeletedMessage(WebhookEvent webhookEvent)
+        {
+            // figure out which name to use
+            var userName = GetUsername(webhookEvent);
+
+            // we don't want to generate a link to the task since it no longer exists
+            return $"{userName} just deleted {webhookEvent.Task.Name}";
+        }
+
+        private string GenerateTaskUpdatedMessage(WebhookEvent webhookEvent)
+        {
+            string message;
+
+            // figure out which name to use
+            var userName = GetUsername(webhookEvent);
+
+            // generate the task link
+            var taskLink = GetTaskLink(webhookEvent);
+
+            // if the user updated the column, we want to know that in more context in slack
+            // otherwise we just tell the user what changed
+            if (webhookEvent.ChangedProperties.Any(p => p.Property.ToLower().Equals("columnId")))
+            {
+                // the user moved the task between columns so let's make an informative message
+                var columnChangeProperty = webhookEvent.ChangedProperties.First(p => p.Property.ToLower().Equals("columnId"));
+                var fromColumn = Globals.Board.Columns.First(c => c.Id.Equals(columnChangeProperty.OldValue));
+                var toColumn = Globals.Board.Columns.First(c => c.Id.Equals(columnChangeProperty.NewValue));
+
+                message = $"{userName} moved {taskLink} from {fromColumn} to {toColumn}";
+            }
+            else
+            {
+                message = $"{userName} just updated {taskLink}";
+            }
+
+            return message;
+        }
+
+        private string GetTaskLink(WebhookEvent webhookEvent)
+        {
+            return $"<{string.Format(Globals.KanbanFlowUrlTemplate, webhookEvent.Task.Id)} | {webhookEvent.Task.Name}>";
+        }
+
+        private string GetUsername(WebhookEvent webhookEvent)
+        {
+            return Globals.ReportFirstNameOnly ? webhookEvent.UserFirstName : webhookEvent.UserFullName;
         }
     }
 }

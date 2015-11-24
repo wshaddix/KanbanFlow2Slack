@@ -1,4 +1,5 @@
-﻿using KanbanFlow2Slack.Web.ApiClients;
+﻿using KanbanFlow2Slack.Web.ApiClients.KanbanFlow;
+using KanbanFlow2Slack.Web.ApiClients.Slack;
 using System.Configuration;
 using System.Web.Http;
 
@@ -17,6 +18,9 @@ namespace KanbanFlow2Slack.Web
 
             // fetch the list of users from kanbanflow
             Globals.Users = new KanbanFlowClient().FetchUsers();
+
+            // fetch the list of boards from kanbanflow
+            Globals.Board = new KanbanFlowClient().FetchBoard();
         }
     }
 }

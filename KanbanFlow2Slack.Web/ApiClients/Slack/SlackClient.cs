@@ -2,7 +2,7 @@
 using System;
 using System.Net.Http;
 
-namespace KanbanFlow2Slack.Web.ApiClients
+namespace KanbanFlow2Slack.Web.ApiClients.Slack
 {
     internal class SlackClient : HttpClient
     {
@@ -18,7 +18,7 @@ namespace KanbanFlow2Slack.Web.ApiClients
 
         internal static string PostUrl { get; set; }
 
-        public void SendMessage(string message)
+        internal void SendMessage(string message)
         {
             // convert the message into json format
             var payload = new
