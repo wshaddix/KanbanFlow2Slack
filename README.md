@@ -7,13 +7,13 @@ Not wanting to create a Zapier account and use up more than one of the five free
 
 How it works
 ============
-1. When the application starts up, it queries KanbanFlow's API for a list of all users associated with your account.
-2. When KanbanFlow sends a webhook to this app, the app will format a message for slack that includes who performed the action along with a link to the task that was created/modified (if the task was deleted there is no url b/c it doesn't exist anymore)
+1. When the application starts up, it queries KanbanFlow's API for the Board associated with the API key.
+2. When KanbanFlow sends a webhook to this app, the app will format a message for slack that includes who performed the action, what action was performed (create, move, update, delete) along with a link to the task that was created/modified (if the task was deleted there is no url b/c it doesn't exist anymore, if the task was moved it will tell you which column it was moved from and to)
 3. Once the message has been generated it is sent to the configured slack channel via the incoming webhook url.
 
 How to configure it
 ===================
-1. Generate an api key from KanbanFlow. This api key is used on application start-up to retrieve the user list.
+1. Generate an api key from KanbanFlow. This api key is used on application start-up to retrieve the associated Board.
 2. Set the api key as the `kanbanflowApiKey` in the web.config and/or the azure configuration interface (or however you normally set your config up)
 3. Configure an incoming webhook in Slack for the channel that you want. 
 4. Set the incoming webhook url as the `slackWebhookUrl` in the web.config and/or the azure configuration interface (or however you normally set your config up)
@@ -27,8 +27,8 @@ How to monitor it
 ==================
 To view the trace logs in real time make sure you have the azure command line tools installed and run
 
-`azure site log tail kanbanflow2slack`
+`azure site log tail kanbanflow2slack <== replace Kanbanflow2slack with your azure app name`
 
 How it looks
 =============
-![](http://i.imgur.com/Gr23Flo.png)
+![](http://i.imgur.com/0JLWaP4.png)
