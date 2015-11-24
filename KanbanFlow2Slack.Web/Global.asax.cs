@@ -16,9 +16,6 @@ namespace KanbanFlow2Slack.Web
             SlackClient.PostUrl = ConfigurationManager.AppSettings["slackWebhookUrl"];
             Globals.ReportFirstNameOnly = bool.Parse(ConfigurationManager.AppSettings["reportFirstNameOnly"]);
 
-            // fetch the list of users from kanbanflow
-            Globals.Users = new KanbanFlowClient().FetchUsers();
-
             // fetch the list of boards from kanbanflow
             Globals.Board = new KanbanFlowClient().FetchBoard();
         }

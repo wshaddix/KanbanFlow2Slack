@@ -91,7 +91,6 @@
     <Compile Include="ApiClients\KanbanFlow\Types\SubTask.cs" />
     <Compile Include="ApiClients\KanbanFlow\Types\SwimLane.cs" />
     <Compile Include="ApiClients\KanbanFlow\Types\Task.cs" />
-    <Compile Include="ApiClients\KanbanFlow\Types\User.cs" />
     <Compile Include="ApiClients\KanbanFlow\Types\WebhookEvent.cs" />
     <Compile Include="ApiClients\Slack\SlackClient.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />

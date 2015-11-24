@@ -1,7 +1,6 @@
 using KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -27,12 +26,6 @@ namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow
         {
             var boardData = GetStringAsync("board").Result;
             return JsonConvert.DeserializeObject<Board>(boardData);
-        }
-
-        internal List<User> FetchUsers()
-        {
-            var userData = GetStringAsync("users").Result;
-            return JsonConvert.DeserializeObject<List<User>>(userData);
         }
     }
 }
