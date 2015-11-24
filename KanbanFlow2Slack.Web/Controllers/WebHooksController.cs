@@ -127,7 +127,7 @@ namespace KanbanFlow2Slack.Web.Controllers
                 var fromColumn = Globals.Board.Columns.First(c => c.Id.Equals(columnChangeProperty.OldValue));
                 var toColumn = Globals.Board.Columns.First(c => c.Id.Equals(columnChangeProperty.NewValue));
 
-                message = $"{userName} moved {taskLink} from {fromColumn.Name} to {toColumn.Name}";
+                message = $"{userName} moved {taskLink} from *{fromColumn.Name}* to *{toColumn.Name}*";
             }
             else
             {
