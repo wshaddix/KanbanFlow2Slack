@@ -2,11 +2,11 @@
 
 namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
-    internal class SwimLane
+    public class SwimLane
     {
         [JsonProperty("uniqueId")]
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal string Name { get; set; }
+        public string Name { get; set; }
     }
 }

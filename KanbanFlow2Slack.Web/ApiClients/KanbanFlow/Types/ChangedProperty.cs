@@ -1,9 +1,9 @@
 ﻿namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
-    internal class ChangedProperty
+    public class ChangedProperty
     {
-        internal string NewValue { get; set; }
-        internal string OldValue { get; set; }
-        internal string Property { get; set; }
+        public string NewValue { get; set; }
+        public string OldValue { get; set; }
+        public string Property { get; set; }
     }
 }

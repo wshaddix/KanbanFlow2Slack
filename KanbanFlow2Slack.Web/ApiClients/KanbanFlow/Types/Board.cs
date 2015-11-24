@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
-    internal class Board
+    public class Board
     {
-        internal List<Column> Columns { get; set; }
+        public List<Column> Columns { get; set; }
 
         [JsonProperty("_id")]
-        internal string Id { get; set; }
+        public string Id { get; set; }
 
-        internal string Name { get; set; }
+        public string Name { get; set; }
 
-        internal List<SwimLane> SwimLanes { get; set; }
+        public List<SwimLane> SwimLanes { get; set; }
     }
 }

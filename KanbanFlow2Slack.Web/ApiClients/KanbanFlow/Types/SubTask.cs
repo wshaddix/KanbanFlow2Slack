@@ -1,8 +1,8 @@
 ﻿namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
-    internal class SubTask
+    public class SubTask
     {
-        internal bool Finished { get; set; }
-        internal string Name { get; set; }
+        public bool Finished { get; set; }
+        public string Name { get; set; }
     }
 }

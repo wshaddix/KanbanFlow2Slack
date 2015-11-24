@@ -120,14 +120,14 @@ namespace KanbanFlow2Slack.Web.Controllers
 
             // if the user updated the column, we want to know that in more context in slack
             // otherwise we just tell the user what changed
-            if (webhookEvent.ChangedProperties.Any(p => p.Property.ToLower().Equals("columnId")))
+            if (webhookEvent.ChangedProperties.Any(p => p.Property.ToLower().Equals("columnid")))
             {
                 // the user moved the task between columns so let's make an informative message
-                var columnChangeProperty = webhookEvent.ChangedProperties.First(p => p.Property.ToLower().Equals("columnId"));
+                var columnChangeProperty = webhookEvent.ChangedProperties.First(p => p.Property.ToLower().Equals("columnid"));
                 var fromColumn = Globals.Board.Columns.First(c => c.Id.Equals(columnChangeProperty.OldValue));
                 var toColumn = Globals.Board.Columns.First(c => c.Id.Equals(columnChangeProperty.NewValue));
 
-                message = $"{userName} moved {taskLink} from {fromColumn} to {toColumn}";
+                message = $"{userName} moved {taskLink} from {fromColumn.Name} to {toColumn.Name}";
             }
             else
             {

@@ -5,21 +5,23 @@ using System.Linq;
 
 namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
-    internal class WebhookEvent
+    public class WebhookEvent
     {
+        // this constructor is called by JsonConvert.DeserializeObject<WebhookEvent>(json);
+        public WebhookEvent()
+        {
+        }
+
+        // this constructor is called by the WebHooksController.cs
         internal WebhookEvent(string json)
         {
-            // instantiate any reference types to avoid possible null ref exceptions
-            ChangedProperties = new List<ChangedProperty>();
-            Task = new Task();
-
             // convert the json to a WebhookEvent
             var instance = JsonConvert.DeserializeObject<WebhookEvent>(json);
 
             // populate this instances properties with the internal instance properties
-            this.ChangedProperties = instance.ChangedProperties;
+            this.ChangedProperties = instance.ChangedProperties ?? new List<ChangedProperty>();
             this.EventType = instance.EventType;
-            this.Task = instance.Task;
+            this.Task = instance.Task ?? new Task();
             this.Timestamp = instance.Timestamp;
             this.UserFullName = instance.UserFullName;
             this.UserId = instance.UserId;
@@ -41,21 +43,23 @@ namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
                 // KanbanFlow does not provide the column name as part of the webhook event so we
                 // need to look it up from the cached board that we loaded when the application
                 // started up.
-                this.Task.ColumnName = Globals.Board.Columns.First(c => c.Id.Equals(Task.ColumnId)).Name;
+                var column = Globals.Board.Columns.FirstOrDefault(c => c.Id.Equals(Task.ColumnId));
+                this.Task.ColumnName = (column == null) ? "unknown" : column.Name;
 
                 // KanbanFlow does not provide the swimlane name as part of the webhook event so we
                 // need to look it up from the cached board that we loaded when the application
                 // started up.
-                this.Task.SwimlaneName = Globals.Board.SwimLanes.First(sl => sl.Id.Equals(Task.SwimlaneId)).Name;
+                var swimlane = Globals.Board.SwimLanes.FirstOrDefault(sl => sl.Id.Equals(Task.SwimlaneId));
+                this.Task.SwimlaneName = (swimlane == null) ? "unknown" : swimlane.Name;
             }
         }
 
-        internal List<ChangedProperty> ChangedProperties { get; set; }
-        internal string EventType { get; set; }
-        internal Task Task { get; set; }
-        internal DateTime Timestamp { get; set; }
-        internal string UserFirstName { get; set; }
-        internal string UserFullName { get; set; }
-        internal string UserId { get; set; }
+        public List<ChangedProperty> ChangedProperties { get; set; }
+        public string EventType { get; set; }
+        public Task Task { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string UserFirstName { get; set; }
+        public string UserFullName { get; set; }
+        public string UserId { get; set; }
     }
 }

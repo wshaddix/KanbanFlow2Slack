@@ -2,13 +2,13 @@
 
 namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
-    internal class Date
+    public class Date
     {
-        internal string DateType { get; set; }
-        internal DateTime DueTimestamp { get; set; }
-        internal DateTime DueTimestampLocal { get; set; }
-        internal string Status { get; set; }
-        internal string TargetColumnId { get; set; }
-        internal string TargetColumnName { get; set; }
+        public string DateType { get; set; }
+        public DateTime DueTimestamp { get; set; }
+        public DateTime DueTimestampLocal { get; set; }
+        public string Status { get; set; }
+        public string TargetColumnId { get; set; }
+        public string TargetColumnName { get; set; }
     }
 }

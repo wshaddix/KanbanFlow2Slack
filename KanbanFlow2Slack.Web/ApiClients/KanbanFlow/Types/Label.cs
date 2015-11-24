@@ -1,8 +1,8 @@
 ﻿namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
-    internal class Label
+    public class Label
     {
-        internal string Name { get; set; }
-        internal bool Pinned { get; set; }
+        public string Name { get; set; }
+        public bool Pinned { get; set; }
     }
 }
