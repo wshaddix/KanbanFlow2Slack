@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Http;
 
@@ -131,7 +132,16 @@ namespace KanbanFlow2Slack.Web.Controllers
             }
             else
             {
-                message = $"{userName} just updated {taskLink}";
+                // the user changed the value of one or more columns
+                var sb = new StringBuilder();
+                sb.AppendLine($"{userName} just updated {taskLink}");
+
+                foreach (var property in webhookEvent.ChangedProperties)
+                {
+                    sb.AppendLine($"*{property.Property}* was updated to: ${property.NewValue}");
+                }
+
+                message = sb.ToString();
             }
 
             return message;
