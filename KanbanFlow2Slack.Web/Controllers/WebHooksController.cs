@@ -138,7 +138,7 @@ namespace KanbanFlow2Slack.Web.Controllers
 
                 foreach (var property in webhookEvent.ChangedProperties)
                 {
-                    sb.AppendLine($"*{property.Property}* was updated to: ${property.NewValue}");
+                    sb.AppendLine($"*{property.Property}* was updated to: {property.NewValue}");
                 }
 
                 message = sb.ToString();
