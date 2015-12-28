@@ -1,7 +1,7 @@
+using Exceptionless;
 using KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types;
 using KanbanFlow2Slack.Web.ApiClients.Slack;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,7 +17,9 @@ namespace KanbanFlow2Slack.Web.Controllers
         [HttpHead]
         public IHttpActionResult Head()
         {
-            Trace.TraceInformation($"Head() called from {HttpContext.Current.Request.UserHostAddress}");
+            ExceptionlessClient.Default.SubmitLog(typeof(WebHooksController).FullName, "HEAD called",
+                Exceptionless.Logging.LogLevel.Info);
+            ExceptionlessClient.Default.SubmitFeatureUsage("KanbanFlow2Slack.WebHooksController.Head()");
 
             // nothing to do, we just need to return a 200 status code
             return Ok();
@@ -26,14 +28,14 @@ namespace KanbanFlow2Slack.Web.Controllers
         [HttpPost]
         public IHttpActionResult Post()
         {
-            Trace.TraceInformation($"Post() called from {HttpContext.Current.Request.UserHostAddress}");
-
             try
             {
+                ExceptionlessClient.Default.SubmitFeatureUsage("KanbanFlow2Slack.WebHooksController.Post()");
+
                 // extract the json data from the HTTP POST request
                 var json = ExtractJsonFromPost();
 
-                Trace.TraceInformation(json);
+                ExceptionlessClient.Default.SubmitLog(typeof(WebHooksController).FullName, json, Exceptionless.Logging.LogLevel.Info);
 
                 // create a new webhook event from the json
                 var webhookEvent = new WebhookEvent(json);
@@ -49,7 +51,7 @@ namespace KanbanFlow2Slack.Web.Controllers
             }
             catch (Exception ex)
             {
-                Trace.TraceError(ex.ToString());
+                ex.ToExceptionless().Submit();
                 return InternalServerError(ex);
             }
         }

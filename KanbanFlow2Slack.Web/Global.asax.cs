@@ -1,4 +1,5 @@
-﻿using KanbanFlow2Slack.Web.ApiClients.KanbanFlow;
+﻿using Exceptionless;
+using KanbanFlow2Slack.Web.ApiClients.KanbanFlow;
 using KanbanFlow2Slack.Web.ApiClients.Slack;
 using System.Configuration;
 using System.Web.Http;
@@ -10,6 +11,8 @@ namespace KanbanFlow2Slack.Web
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            ExceptionlessClient.Default.RegisterWebApi(GlobalConfiguration.Configuration);
+            ExceptionlessClient.Default.Configuration.ApiKey = ConfigurationManager.AppSettings["exceptionLessApiKey"];
 
             // setup configuration
             KanbanFlowClient.ApiKey = ConfigurationManager.AppSettings["kanbanflowApiKey"];
