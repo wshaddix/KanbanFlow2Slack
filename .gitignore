@@ -3,6 +3,7 @@
 
 # Configuration file with secrets
 appSecrets.config
+Web.dev.config
 
 # User-specific files
 *.suo

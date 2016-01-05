@@ -132,6 +132,18 @@ namespace KanbanFlow2Slack.Web.Controllers
 
                 message = $"{userName} moved {taskLink} from *{fromColumn.Name}* to *{toColumn.Name}*";
             }
+            // if the user updated the totalSecondsSpent we want to display it in a more readable format
+            else if (webhookEvent.ChangedProperties.Any(p => p.Property.ToLower().Equals("totalsecondsspent")))
+            {
+                var timeChangeProperty = webhookEvent.ChangedProperties.First(p => p.Property.ToLower().Equals("totalsecondsspent"));
+                var oldTime = double.Parse(timeChangeProperty.OldValue);
+                var newTime = double.Parse(timeChangeProperty.NewValue);
+
+                var oldTotalTime = TimeSpan.FromSeconds(oldTime);
+                var newTotalTime = TimeSpan.FromSeconds(newTime);
+
+                message = $"{userName} updated time spent on {taskLink} from *{oldTotalTime.Hours}h{oldTotalTime.Minutes}m{oldTotalTime.Seconds}s* to *{newTotalTime.Hours}h{newTotalTime.Minutes}m{newTotalTime.Seconds}s*";
+            }
             else
             {
                 // the user changed the value of one or more columns

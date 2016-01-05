@@ -27,7 +27,14 @@ namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
             this.UserId = instance.UserId;
 
             // set the UserFirstName property
-            UserFirstName = UserFullName.Substring(0, UserFullName.IndexOf(" ", StringComparison.Ordinal));
+            if (UserFullName.Contains(" "))
+            {
+                UserFirstName = UserFullName.Substring(0, UserFullName.IndexOf(" ", StringComparison.Ordinal));
+            }
+            else
+            {
+                UserFirstName = UserFullName;
+            }
 
             // if the EventType is taskDeleted, then KanbanFlow places the taskId and taskName in a
             // different part of the json payload than if the EventType is taskChanged or taskCreated
