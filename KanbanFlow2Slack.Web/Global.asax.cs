@@ -20,7 +20,11 @@ namespace KanbanFlow2Slack.Web
             Globals.ReportFirstNameOnly = bool.Parse(ConfigurationManager.AppSettings["reportFirstNameOnly"]);
 
             // fetch the list of boards from kanbanflow
-            Globals.Board = new KanbanFlowClient().FetchBoard();
+            var kanbanClient = new KanbanFlowClient();
+            Globals.Board = kanbanClient.FetchBoardAsync().Result;
+
+            // fetch the list of users from kanbanflow
+            Globals.Users = kanbanClient.FetchUsersAsync().Result;
         }
     }
 }

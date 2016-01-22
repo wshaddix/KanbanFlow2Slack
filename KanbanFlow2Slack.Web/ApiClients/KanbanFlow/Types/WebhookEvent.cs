@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Exceptionless;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LogLevel = Exceptionless.Logging.LogLevel;
 
 namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
 {
@@ -16,7 +18,26 @@ namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
         internal WebhookEvent(string json)
         {
             // convert the json to a WebhookEvent
-            var instance = JsonConvert.DeserializeObject<WebhookEvent>(json);
+            var instance = JsonConvert.DeserializeObject<WebhookEvent>(json, new JsonSerializerSettings
+            {
+                Error = (sender, args) =>
+                {
+                    var currentError = args.ErrorContext.Error.Message;
+
+                    // we need to log that this happened but we can't do anything about it
+                    ExceptionlessClient.Default.SubmitLog("WebhookEvent.ctor",
+                        $"There was an error deserializing the webhook from KanbanFlow: {currentError}",
+                        LogLevel.Error);
+
+                    args.ErrorContext.Handled = true;
+                }
+            });
+
+            if (null == instance)
+            {
+                // errors occurred during deserialization and we cannot continue
+                throw new ApplicationException($"Failed to process webhook: {json}");
+            }
 
             // populate this instances properties with the internal instance properties
             this.ChangedProperties = instance.ChangedProperties ?? new List<ChangedProperty>();

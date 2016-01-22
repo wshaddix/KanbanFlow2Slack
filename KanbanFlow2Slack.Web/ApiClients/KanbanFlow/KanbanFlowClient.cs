@@ -1,9 +1,11 @@
 using KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow
 {
@@ -22,10 +24,16 @@ namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow
 
         internal static string ApiKey { get; set; }
 
-        internal Board FetchBoard()
+        internal async Task<Board> FetchBoardAsync()
         {
-            var boardData = GetStringAsync("board").Result;
+            var boardData = await GetStringAsync("board");
             return JsonConvert.DeserializeObject<Board>(boardData);
+        }
+
+        internal async Task<IEnumerable<User>> FetchUsersAsync()
+        {
+            var userData = await GetStringAsync("users");
+            return JsonConvert.DeserializeObject<List<User>>(userData);
         }
     }
 }

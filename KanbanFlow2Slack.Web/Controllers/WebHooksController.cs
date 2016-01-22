@@ -52,7 +52,7 @@ namespace KanbanFlow2Slack.Web.Controllers
             catch (Exception ex)
             {
                 ex.ToExceptionless().Submit();
-                return InternalServerError(ex);
+                return Ok();
             }
         }
 
@@ -143,6 +143,15 @@ namespace KanbanFlow2Slack.Web.Controllers
                 var newTotalTime = TimeSpan.FromSeconds(newTime);
 
                 message = $"{userName} updated time spent on {taskLink} from *{oldTotalTime.Hours}h{oldTotalTime.Minutes}m{oldTotalTime.Seconds}s* to *{newTotalTime.Hours}h{newTotalTime.Minutes}m{newTotalTime.Seconds}s*";
+            }
+            // if the responsible user was updated we want to display the user's name instead of the userId
+            else if (webhookEvent.ChangedProperties.Any(p => p.Property.ToLower().Equals("responsibleuserid")))
+            {
+                var responsibleUserProperty = webhookEvent.ChangedProperties.First(p => p.Property.ToLower().Equals("responsibleuserid"));
+                var userId = responsibleUserProperty.NewValue;
+                var responsibleUser = Globals.Users.FirstOrDefault(u => u.Id == userId);
+
+                message = $"{userName} assigned {taskLink} to {responsibleUser?.FullName}";
             }
             else
             {
