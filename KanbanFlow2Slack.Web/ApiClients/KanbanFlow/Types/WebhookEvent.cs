@@ -77,8 +77,11 @@ namespace KanbanFlow2Slack.Web.ApiClients.KanbanFlow.Types
                 // KanbanFlow does not provide the swimlane name as part of the webhook event so we
                 // need to look it up from the cached board that we loaded when the application
                 // started up.
-                var swimlane = Globals.Board.SwimLanes.FirstOrDefault(sl => sl.Id.Equals(Task.SwimlaneId));
-                this.Task.SwimlaneName = (swimlane == null) ? "unknown" : swimlane.Name;
+                if (Globals.Board.SwimLanes != null && Globals.Board.SwimLanes.Any())
+                {
+                    var swimlane = Globals.Board.SwimLanes.FirstOrDefault(sl => sl.Id.Equals(Task.SwimlaneId));
+                    this.Task.SwimlaneName = (swimlane == null) ? "unknown" : swimlane.Name;
+                }
             }
         }
 
