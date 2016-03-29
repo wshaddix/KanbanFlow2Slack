@@ -17,10 +17,6 @@ namespace KanbanFlow2Slack.Web.Controllers
         [HttpHead]
         public IHttpActionResult Head()
         {
-            ExceptionlessClient.Default.SubmitLog(typeof(WebHooksController).FullName, "HEAD called",
-                Exceptionless.Logging.LogLevel.Info);
-            ExceptionlessClient.Default.SubmitFeatureUsage("KanbanFlow2Slack.WebHooksController.Head()");
-
             // nothing to do, we just need to return a 200 status code
             return Ok();
         }
@@ -30,8 +26,6 @@ namespace KanbanFlow2Slack.Web.Controllers
         {
             try
             {
-                ExceptionlessClient.Default.SubmitFeatureUsage("KanbanFlow2Slack.WebHooksController.Post()");
-
                 // extract the json data from the HTTP POST request
                 var json = ExtractJsonFromPost();
 
